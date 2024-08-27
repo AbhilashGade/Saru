@@ -34,9 +34,6 @@ jobs:
         fi
     - name: Bump version
       run: cargo bump ${{ steps.bump_version.outputs.bump }}
-    - name: Get new version
-      id: get_version
-      run: echo "::set-output name=version::$(cargo pkgid | cut -d# -f2 | cut -d: -f2)"
     - name: Commit version bump
       run: |
         git config --local user.email "action@github.com"

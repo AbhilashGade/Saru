@@ -13,7 +13,8 @@ jobs:
       run: cargo build --release
     - name: Get version
       id: get_version
-      run: echo "::set-output name=version::$(cargo pkgid | cut -d# -f2 | cut -d: -f2)"
+      run: |
+        echo "version=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)" >> $GITHUB_OUTPUT
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       env:
