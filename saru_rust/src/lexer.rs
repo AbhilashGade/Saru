@@ -176,11 +176,11 @@ mod tests {
     //     let mut lexer = Lexer::new("let five = 5;");
     //     assert_eq!(lexer.read_number(), "5");
     }
-    #[test]
-    // fn test_read_string() {
-    //     let mut lexer = Lexer::new("let five = 5;");
-    //     assert_eq!(lexer.read_string(), "let");
-    // }
+    // #[test]
+    // // fn test_read_string() {
+    // //     let mut lexer = Lexer::new("let five = 5;");
+    // //     assert_eq!(lexer.read_string(), "let");
+    // // }
     #[test]
     fn test_skip_whitespace() {
         let mut lexer = Lexer::new("   let five = 5;");

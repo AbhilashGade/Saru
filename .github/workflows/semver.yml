@@ -10,7 +10,50 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Semantic Release
-      uses: cycjimmy/semantic-release-action@v2
+      with:
+        fetch-depth: 0
+    - name: Install Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        profile: minimal
+        toolchain: stable
+    - name: Install cargo-bump
+      run: cargo install cargo-bump
+    - name: Get commit messages
+      id: get_commits
+      run: echo "::set-output name=commits::$(git log --format=%B -n 1 ${{ github.event.after }})"
+    - name: Determine version bump
+      id: bump_version
+      run: |
+        if [[ "${{ steps.get_commits.outputs.commits }}" == *"BREAKING CHANGE"* ]]; then
+          echo "::set-output name=bump::major"
+        elif [[ "${{ steps.get_commits.outputs.commits }}" == *"feat:"* ]]; then
+          echo "::set-output name=bump::minor"
+        else
+          echo "::set-output name=bump::patch"
+        fi
+    - name: Bump version
+      run: cargo bump ${{ steps.bump_version.outputs.bump }}
+    - name: Get new version
+      id: get_version
+      run: echo "::set-output name=version::$(cargo pkgid | cut -d# -f2 | cut -d: -f2)"
+    - name: Commit version bump
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add Cargo.toml
+        git commit -m "Bump version to ${{ steps.get_version.outputs.version }}"
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ github.ref }}
+    - name: Create Release
+      uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: v${{ steps.get_version.outputs.version }}
+        release_name: Release ${{ steps.get_version.outputs.version }}
+        draft: false
+        prerelease: false
