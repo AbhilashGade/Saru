@@ -17,4 +17,6 @@ jobs:
         profile: minimal
         toolchain: stable
     - name: Run tests
-      run: cargo test --verbose
+      run: |
+        cd saru_rust
+        cargo test --verbose
