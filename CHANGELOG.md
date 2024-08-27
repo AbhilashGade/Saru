@@ -1,5 +1,9 @@
 # Changelog
 
+## [vrust_saru@0.1.3](https://github.com/AbhilashGade/saru/tree/vrust_saru@0.1.3) (2024-08-27)
+
+[Full Changelog](https://github.com/AbhilashGade/saru/compare/vrust_saru@0.1.2...vrust_saru@0.1.3)
+
 ## [vrust_saru@0.1.2](https://github.com/AbhilashGade/saru/tree/vrust_saru@0.1.2) (2024-08-27)
 
 [Full Changelog](https://github.com/AbhilashGade/saru/compare/v...vrust_saru@0.1.2)
