@@ -1,4 +1,4 @@
-name: Semantic Versioning
+name: Semantic Versioning and Release
 
 on:
   push:
@@ -24,27 +24,35 @@ jobs:
       run: cargo install cargo-bump
     - name: Get commit messages
       id: get_commits
-      run: echo "::set-output name=commits::$(git log --format=%B -n 1 ${{ github.event.after }})"
+      run: echo "commits=$(git log --format=%B -n 1 ${{ github.event.after }})" >> $GITHUB_OUTPUT
     - name: Determine version bump
       id: bump_version
       run: |
         if [[ "${{ steps.get_commits.outputs.commits }}" == *"BREAKING CHANGE"* ]]; then
-          echo "::set-output name=bump::major"
+          echo "bump=major" >> $GITHUB_OUTPUT
         elif [[ "${{ steps.get_commits.outputs.commits }}" == *"feat:"* ]]; then
-          echo "::set-output name=bump::minor"
+          echo "bump=minor" >> $GITHUB_OUTPUT
         else
-          echo "::set-output name=bump::patch"
+          echo "bump=patch" >> $GITHUB_OUTPUT
         fi
     - name: Bump version
+      id: version
       run: |
         cd saru_rust
         cargo bump ${{ steps.bump_version.outputs.bump }}
-    - name: Commit version bump
+        echo "new_version=$(cargo pkgid | cut -d# -f2 | cut -d: -f2)" >> $GITHUB_OUTPUT
+    - name: Generate Changelog
+      id: changelog
+      uses: heinrichreimer/github-changelog-generator-action@v2.3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        output: CHANGELOG.md
+    - name: Commit version bump and changelog
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add saru_rust/Cargo.toml
-        git commit -m "Bump version to ${{ steps.get_version.outputs.version }}"
+        git add saru_rust/Cargo.toml CHANGELOG.md
+        git commit -m "Bump version to ${{ steps.version.outputs.new_version }} and update changelog"
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
@@ -55,7 +63,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: v${{ steps.get_version.outputs.version }}
-        release_name: Release ${{ steps.get_version.outputs.version }}
+        tag_name: v${{ steps.version.outputs.new_version }}
+        release_name: Release ${{ steps.version.outputs.new_version }}
+        body: |
+          Changes in this Release
+          ${{ steps.changelog.outputs.changelog }}
         draft: false
         prerelease: false
