@@ -19,10 +19,24 @@ jobs:
       with:
         profile: minimal
         toolchain: stable
+        components: clippy
+    - name: Install cargo-semver-checks
+      uses: actions-rs/install@v0.1
+      with:
+        crate: cargo-semver-checks
+        version: latest
     - name: Run tests
       run: |
         cd saru_rust
         cargo test --verbose
+    - name: Run Clippy
+      run: |
+        cd saru_rust
+        cargo clippy -- -D warnings
+    - name: Run cargo-semver-checks
+      run: |
+        cd saru_rust
+        cargo semver-checks check-release
 
   version-and-release:
     needs: ci
@@ -76,6 +90,7 @@ jobs:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: ${{ github.ref }}
     - name: Create Release
+      id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -87,10 +102,12 @@ jobs:
           ${{ steps.changelog.outputs.changelog }}
         draft: false
         prerelease: false
+
     - name: Build Release Asset
       run: |
         cd saru_rust
         cargo build --release
+
     - name: Upload Release Asset
       uses: actions/upload-release-asset@v1
       env:
