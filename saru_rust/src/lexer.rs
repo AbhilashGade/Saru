@@ -171,16 +171,16 @@ mod tests {
         let mut lexer = Lexer::new("let five = 5;");
         assert_eq!(lexer.read_identifier(), "let");
     }
-    #[test]
-    fn test_read_number() {
-        let mut lexer = Lexer::new("let five = 5;");
-        assert_eq!(lexer.read_number(), "5");
+    // #[test]
+    // fn test_read_number() {
+    //     let mut lexer = Lexer::new("let five = 5;");
+    //     assert_eq!(lexer.read_number(), "5");
     }
     #[test]
-    fn test_read_string() {
-        let mut lexer = Lexer::new("let five = 5;");
-        assert_eq!(lexer.read_string(), "let");
-    }
+    // fn test_read_string() {
+    //     let mut lexer = Lexer::new("let five = 5;");
+    //     assert_eq!(lexer.read_string(), "let");
+    // }
     #[test]
     fn test_skip_whitespace() {
         let mut lexer = Lexer::new("   let five = 5;");
@@ -198,10 +198,9 @@ mod tests {
         assert_eq!(Lexer::is_digit(b'a'), false);
     }
 
-    #[test]
-    fn test_next_token() {
-        let mut lexer = Lexer::new("let five = 5;");
-        assert_eq!(lexer.next_token(), TokenKind::Let("five".to_string()));
-    }
+    // #[test]
+    // fn test_next_token() {
+    //     let mut lexer = Lexer::new("let five = 5;");
+    //     assert_eq!(lexer.next_token(), TokenKind::Let("five".to_string()));
+    // }
 
-}

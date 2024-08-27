@@ -1,0 +1,16 @@
+name: Semantic Versioning
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  semver:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Semantic Release
+      uses: cycjimmy/semantic-release-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
