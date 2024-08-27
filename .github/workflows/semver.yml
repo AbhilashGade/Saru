@@ -33,12 +33,14 @@ jobs:
           echo "::set-output name=bump::patch"
         fi
     - name: Bump version
-      run: cargo bump ${{ steps.bump_version.outputs.bump }}
+      run: |
+        cd saru_rust
+        cargo bump ${{ steps.bump_version.outputs.bump }}
     - name: Commit version bump
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add Cargo.toml
+        git add saru_rust/Cargo.toml
         git commit -m "Bump version to ${{ steps.get_version.outputs.version }}"
     - name: Push changes
       uses: ad-m/github-push-action@master
