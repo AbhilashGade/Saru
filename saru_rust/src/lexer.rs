@@ -111,6 +111,20 @@ impl Lexer {
             b')' => TokenKind::RParen,
             b'{' => TokenKind::LBrace,
             b'}' => TokenKind::RBrace,
+            b'"' => TokenKind::String(self.read_string()),
+            b'a'..=b'z' | b'A'..=b'Z' | b'_' => {
+                let ident = self.read_identifier();
+                match ident.as_str() {
+                    "let" => TokenKind::Let(ident),
+                    "fn" => TokenKind::Function(ident),
+                    "true" => TokenKind::True,
+                    "false" => TokenKind::False,
+                    "if" => TokenKind::If,
+                    "else" => TokenKind::Else,
+                    "return" => TokenKind::Return,
+                    _ => TokenKind::Identifier(ident),
+                }
+            }
             
             _ => TokenKind::Illegal,
             
@@ -171,16 +185,16 @@ mod tests {
         let mut lexer = Lexer::new("let five = 5;");
         assert_eq!(lexer.read_identifier(), "let");
     }
-    // #[test]
-    // fn test_read_number() {
-    //     let mut lexer = Lexer::new("let five = 5;");
-    //     assert_eq!(lexer.read_number(), "5");
+    #[test]
+    fn test_read_number() {
+        let mut lexer = Lexer::new("let five = 5;");
+        assert_eq!(lexer.read_number(), "5");
     }
-    // #[test]
-    // // fn test_read_string() {
-    // //     let mut lexer = Lexer::new("let five = 5;");
-    // //     assert_eq!(lexer.read_string(), "let");
-    // // }
+    #[test]
+    fn test_read_string() {
+        let mut lexer = Lexer::new("let five = 5;");
+        assert_eq!(lexer.read_string(), "let");
+    }
     #[test]
     fn test_skip_whitespace() {
         let mut lexer = Lexer::new("   let five = 5;");
@@ -198,9 +212,11 @@ mod tests {
         assert_eq!(Lexer::is_digit(b'a'), false);
     }
 
-    // #[test]
-    // fn test_next_token() {
-    //     let mut lexer = Lexer::new("let five = 5;");
-    //     assert_eq!(lexer.next_token(), TokenKind::Let("five".to_string()));
-    // }
+    #[test]
+    fn test_next_token() {
+        let mut lexer = Lexer::new("let five = 5;");
+        assert_eq!(lexer.next_token(), TokenKind::Let("let".to_string()));
+    }
+
+}
 

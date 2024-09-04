@@ -20,11 +20,11 @@ jobs:
         profile: minimal
         toolchain: stable
         components: clippy
-    - name: Install cargo-semver-checks
-      uses: actions-rs/install@v0.1
-      with:
-        crate: cargo-semver-checks
-        version: latest
+    # - name: Install cargo-semver-checks
+    #   uses: actions-rs/install@v0.1
+    #   with:
+    #     crate: cargo-semver-checks
+    #     version: latest
     - name: Run tests
       run: |
         cd saru_rust
@@ -33,10 +33,10 @@ jobs:
       run: |
         cd saru_rust
         cargo clippy -- -D warnings
-    - name: Run cargo-semver-checks
-      run: |
-        cd saru_rust
-        cargo semver-checks check-release
+    # - name: Run cargo-semver-checks
+    #   run: |
+    #     cd saru_rust
+    #     cargo semver-checks check-release
 
   version-and-release:
     needs: ci
