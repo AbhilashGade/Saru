@@ -2,3 +2,7 @@
 name = "rust_saru"
 version = "0.1.4"
 edition = "2021"
+
+[dependencies]
+
+nom = "v7.1.3"
