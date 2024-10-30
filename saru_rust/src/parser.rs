@@ -209,19 +209,19 @@ impl Parser {
     fn parse_if_expression<'a>(&self, input: &'a [TokenKind]) -> IResult<&'a [TokenKind], Expr> {
         let input = &input[1..]; // Skip 'if'
 
-        let (input, _) = match_token(TokenKind::LParen)(input)?;
+        let (input, _) = Self::match_token(TokenKind::LParen)(input)?;
         let (input, condition) = self.parse_expr(input, 0)?;
-        let (input, _) = match_token(TokenKind::RParen)(input)?;
+        let (input, _) = Self::match_token(TokenKind::RParen)(input)?;
 
-        let (input, _) = match_token(TokenKind::LBrace)(input)?;
+        let (input, _) = Self::match_token(TokenKind::LBrace)(input)?;
         let (input, consequence) = self.parse_expressions(input, Some(TokenKind::RBrace))?;
-        let (mut input, _) = match_token(TokenKind::RBrace)(input)?;
+        let (mut input, _) = Self::match_token(TokenKind::RBrace)(input)?;
 
         let alternative = if input.first() == Some(&TokenKind::Else) {
             input = &input[1..];
-            let (new_input, _) = match_token(TokenKind::LBrace)(input)?;
+            let (new_input, _) = Self::match_token(TokenKind::LBrace)(input)?;
             let (new_input, else_block) = self.parse_expressions(new_input, Some(TokenKind::RBrace))?;
-            let (new_input, _) = match_token(TokenKind::RBrace)(new_input)?;
+            let (new_input, _) = Self::match_token(TokenKind::RBrace)(new_input)?;
             input = new_input;
             Some(Box::new(else_block))
         } else {
@@ -239,13 +239,13 @@ impl Parser {
             _ => return Err(nom::Err::Error(nom::error::Error::new(input, nom::error::ErrorKind::Tag))),
         };
 
-        let (input, _) = match_token(TokenKind::LParen)(input)?;
+        let (input, _) = Self::match_token(TokenKind::LParen)(input)?;
         let (input, params) = self.parse_function_params(input)?;
-        let (input, _) = match_token(TokenKind::RParen)(input)?;
+        let (input, _) = Self::match_token(TokenKind::RParen)(input)?;
 
-        let (input, _) = match_token(TokenKind::LBrace)(input)?;
+        let (input, _) = Self::match_token(TokenKind::LBrace)(input)?;
         let (input, body) = self.parse_expressions(input, Some(TokenKind::RBrace))?;
-        let (input, _) = match_token(TokenKind::RBrace)(input)?;
+        let (input, _) = Self::match_token(TokenKind::RBrace)(input)?;
 
         Ok((input, Expr::Function(name, params, Box::new(body))))
     }
