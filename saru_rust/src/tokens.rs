@@ -1,5 +1,7 @@
 #![allow(dead_code)]
 
+use std::{hash::Hash, hash::Hasher};
+
 // Your code goes here
 #[derive(Debug)]
 pub struct Token {
@@ -8,7 +10,7 @@ pub struct Token {
 }
 
 // Define the TokenType as an enum
-#[derive(Debug, PartialEq, PartialOrd)]
+#[derive(Debug, PartialEq, PartialOrd, Hash, Eq)]
 pub enum TokenKind {
     Illegal,
     Eof,
@@ -19,7 +21,7 @@ pub enum TokenKind {
     String(String),
     True,
     False,
-    
+
     // Operators
     Assign(String),
     Plus,
@@ -27,7 +29,7 @@ pub enum TokenKind {
     Divide,
     Multiply,
     Asterisk,
-    
+
     // Delimiters
     Comma,
     Semicolon,
@@ -39,11 +41,11 @@ pub enum TokenKind {
     Colon,
     Let(String),
 
-    // Keywords 
+    // Keywords
     If,
     Else,
     Return,
-    While,  
+    While,
     For,
     In,
     Break,
@@ -74,7 +76,7 @@ pub enum TokenKind {
     LogicalOr,
     Increment,
     Decrement,
-    
+
     // Bitwise operators
     BitwiseShiftLeft,
     BitwiseShiftRight,
@@ -87,8 +89,6 @@ pub enum TokenKind {
     BitwiseShiftRightAssign,
     BitwiseRotateLeftAssign,
     BitwiseRotateRightAssign,
-    
-    
 }
 
 impl Token {
@@ -144,7 +144,7 @@ pub fn issue_token(kind: TokenKind, value: String) -> Token {
         TokenKind::Static => Token::new(TokenKind::Static, value),
         TokenKind::Mut => Token::new(TokenKind::Mut, value),
         TokenKind::Ref => Token::new(TokenKind::Ref, value),
-       
+
         // Comparison operators
         TokenKind::Equal => Token::new(TokenKind::Equal, value),
         TokenKind::NotEqual => Token::new(TokenKind::NotEqual, value),
@@ -167,8 +167,17 @@ pub fn issue_token(kind: TokenKind, value: String) -> Token {
         TokenKind::BitwiseShiftLeftAssign => Token::new(TokenKind::BitwiseShiftLeftAssign, value),
         TokenKind::BitwiseShiftRightAssign => Token::new(TokenKind::BitwiseShiftRightAssign, value),
         TokenKind::BitwiseRotateLeftAssign => Token::new(TokenKind::BitwiseRotateLeftAssign, value),
-        TokenKind::BitwiseRotateRightAssign => Token::new(TokenKind::BitwiseRotateRightAssign, value),
+        TokenKind::BitwiseRotateRightAssign => {
+            Token::new(TokenKind::BitwiseRotateRightAssign, value)
+        }
         _ => Token::new(TokenKind::Illegal, value),
+    }
+}
+
+impl Hash for Token {
+    fn hash<H: Hasher>(&self, token: &mut H) {
+        self.kind.hash(state);
+        self.value.hash(state);
     }
 }
 #[cfg(test)]
@@ -187,8 +196,14 @@ mod tests {
 
     #[test]
     fn test_issue_token() {
-        let ident_token = issue_token(TokenKind::Identifier("".to_string()), "myVariable".to_string());
-        assert_eq!(ident_token.kind, TokenKind::Identifier("myVariable".to_string()));
+        let ident_token = issue_token(
+            TokenKind::Identifier("".to_string()),
+            "myVariable".to_string(),
+        );
+        assert_eq!(
+            ident_token.kind,
+            TokenKind::Identifier("myVariable".to_string())
+        );
         assert_eq!(ident_token.value, "myVariable");
 
         let int_token = issue_token(TokenKind::Int("u32".to_string()), "42".to_string());
@@ -223,8 +238,6 @@ mod tests {
         assert_eq!(minus_token.kind, TokenKind::Minus);
         assert_eq!(minus_token.value, "-");
 
-       
-
         let illegal_token = issue_token(TokenKind::Illegal, "invalid".to_string());
         assert_eq!(illegal_token.kind, TokenKind::Illegal);
         assert_eq!(illegal_token.value, "invalid");
@@ -243,7 +256,7 @@ mod tests {
         let return_token = issue_token(TokenKind::Return, "return".to_string());
         assert_eq!(return_token.kind, TokenKind::Return);
         assert_eq!(return_token.value, "return");
-        
+
         let while_token = issue_token(TokenKind::While, "while".to_string());
         assert_eq!(while_token.kind, TokenKind::While);
         assert_eq!(while_token.value, "while");
@@ -299,7 +312,7 @@ mod tests {
         let import_token = issue_token(TokenKind::Import, "import".to_string());
         assert_eq!(import_token.kind, TokenKind::Import);
         assert_eq!(import_token.value, "import");
-        
+
         let export_token = issue_token(TokenKind::Export, "export".to_string());
         assert_eq!(export_token.kind, TokenKind::Export);
         assert_eq!(export_token.value, "export");
@@ -335,10 +348,6 @@ mod tests {
         let greater_than_equal_token = issue_token(TokenKind::GreaterThanEqual, ">=".to_string());
         assert_eq!(greater_than_equal_token.kind, TokenKind::GreaterThanEqual);
         assert_eq!(greater_than_equal_token.value, ">=");
-
-        
-
-        
     }
 
     #[test]
@@ -358,10 +367,6 @@ mod tests {
         let greater_than_token = issue_token(TokenKind::GreaterThan, ">".to_string());
         assert_eq!(greater_than_token.kind, TokenKind::GreaterThan);
         assert_eq!(greater_than_token.value, ">");
-        
-        
-
-       
     }
 
     #[test]
@@ -377,9 +382,5 @@ mod tests {
         let rotate_left_token = issue_token(TokenKind::BitwiseRotateLeft, "<<>".to_string());
         assert_eq!(rotate_left_token.kind, TokenKind::BitwiseRotateLeft);
         assert_eq!(rotate_left_token.value, "<<>");
-
-    
-
-       
     }
 }

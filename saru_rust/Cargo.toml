@@ -5,4 +5,4 @@ edition = "2021"
 
 [dependencies]
 
-nom = "v7.1.3"
+nom = "7.1.3"
